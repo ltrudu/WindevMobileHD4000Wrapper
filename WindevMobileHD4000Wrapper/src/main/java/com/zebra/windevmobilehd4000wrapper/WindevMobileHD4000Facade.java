@@ -19,7 +19,6 @@ public class WindevMobileHD4000Facade {
     public interface IAppelProcedureWL
     {
         void appelProcedureWLSS(String param1, String param2);
-        void appelProcedureWLSSS(String param1, String param2, String param3);
         void appelProcedureWLSSSS(String param1, String param2, String param3, String param4);
     }
 
@@ -29,7 +28,7 @@ public class WindevMobileHD4000Facade {
     }
 
     // Membres
-    private final static String TAG = "WindevMobileHUDFacade";
+    private final static String TAG = "WDMhd4k";
 
     // TODO: Localize me
     private final String STATUS_SUCCESS = "SUCCES";
@@ -106,15 +105,14 @@ public class WindevMobileHD4000Facade {
             mZebraHud.onResume(getActivity(), new ZebraHud.EventListener() {
                 @Override
                 public void onConnected(Boolean aBoolean) {
-                    if (mAppelProcedureWL != null) {
-
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackOnConnected)) {
                         mAppelProcedureWL.appelProcedureWLSS(fsCallbackOnConnected, aBoolean ? STATUS_TRUE : STATUS_FALSE);
                     }
                 }
 
                 @Override
                 public void onImageUpdated(byte[] bytes) {
-                    if (mAppelProcedureWL != null) {
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackOnImageUpdated)) {
 
                         mAppelProcedureWL.appelProcedureWLSS(fsCallbackOnImageUpdated, getImageBytesAsJsonString(bytes));
                     }
@@ -122,7 +120,7 @@ public class WindevMobileHD4000Facade {
 
                 @Override
                 public void onCameraImage(Bitmap bitmap) {
-                    if (mAppelProcedureWL != null) {
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackOnCameraImage)) {
                         mAppelProcedureWL.appelProcedureWLSS(fsCallbackOnCameraImage, getCameraBitmapAsJsonString(bitmap));
                     }
                 }
@@ -130,10 +128,12 @@ public class WindevMobileHD4000Facade {
         }
     }
 
+    //TODO: Transcript Bitmap Data as JSON String to allow marshalling to Windev Mobile
     private String getCameraBitmapAsJsonString(Bitmap bitmap) {
         return null;
     }
 
+    //TODO: Transcript Bytes Image Data as JSON String to allow marshalling to Windev Mobile
     private String getImageBytesAsJsonString(byte[] bytes) {
         return null;
     }
@@ -148,8 +148,7 @@ public class WindevMobileHD4000Facade {
                 deviceInfo = mZebraHud.getDeviceInfo();
                 logMessage("Getting device Info:\n" + deviceInfo);
                 if (fsCallbackSucces != "") {
-                    if (mAppelProcedureWL != null) {
-
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
                         mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "getDeviceInfo", deviceInfo);
                     }
                 }
@@ -285,368 +284,564 @@ public class WindevMobileHD4000Facade {
         }
     }
 
-    public int getBrightness() {
-        return mZebraHud.getBrightness();
+    public int getBrightness(final String fsCallbackErreur)
+    {
+        try
+        {
+            if(isConnected())
+            {
+                return mZebraHud.getBrightness();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getBrightness", "No HD4000 connected.");
+            }
+        }
+        catch(Exception e)
+        {
+            logMessage("Exception in: getBrightness\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getBrightness", e.getLocalizedMessage());
+        }
+        return -1;
     }
 
-    public void setScale(int percent) {
-        mZebraHud.setScale(percent);
+    public void setScale(int percent, final String fsCallbackSucces, final String fsCallbackErreur)
+    {
+        try
+        {
+            if(isConnected())
+            {
+                mZebraHud.setScale(percent);
+                logMessage("Scale set to: " + percent + "%");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "setScale", Integer.toString(percent));
+
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "setScale", "No HD4000 connected.");
+            }
+        }
+        catch(Exception e)
+        {
+            logMessage("Exception in: setScale\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "setScale", e.getLocalizedMessage());
+        }
     }
 
-    public int getScale() {
-        return mZebraHud.getScale();
+    public int getScale(final String fsCallbackErreur)
+    {
+        try
+        {
+            if(isConnected())
+            {
+                return mZebraHud.getScale();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getScale", "No HD4000 connected.");
+            }
+        }
+        catch(Exception e)
+        {
+            logMessage("Exception in: getScale\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getScale", e.getLocalizedMessage());
+        }
+        return -1;
     }
 
     public byte[] showMessage(final String title, final String message, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            byte[] returnValue = mZebraHud.showMessage(title, message);
-            if(returnValue != null) {
-                logMessage("Success to display message: \nTitle: " + title + "\nMessage: " + message);
-                if (fsCallbackSucces != "") {
-                    if (mAppelProcedureWL != null) {
-                        mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Success to display message: \nTitle: " + title + "\nMessage: " + message);
+            if(isConnected())
+            {
+                byte[] returnValue = mZebraHud.showMessage(title, message);
+                if(returnValue != null) {
+                    logMessage("Success to display message: \nTitle: " + title + "\nMessage: " + message);
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "showMessage", "Message:\nTitle: " + title + "\nMessage: " + message);
                     }
+                    return returnValue;
                 }
-                return returnValue;
+                else
+                {
+                    logMessage("Error to display message: \nTitle: " + title + "\nMessage: " + message);
+                    if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showMessage", "Error displaying message:\nTitle: " + title + "\nMessage: " + message);
+                }
             }
             else
             {
-                logMessage("Error to display message: \nTitle: " + title + "\nMessage: " + message);
-                mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "Error to display message: \nTitle: " + title + "\nMessage: " + message);
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showMessage", "No HD4000 connected.");
             }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: showMessage\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showMessage", e.getLocalizedMessage());
         }
         return null;
     }
 
     public byte[] showImage(final Bitmap bitmap, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            byte[] returnValue = mZebraHud.showImage(bitmap);
-            if(returnValue != null) {
-                logMessage("Image sent to HUD.\nSize:" + bitmap.getByteCount());
-
-                if (fsCallbackSucces != "") {
-                    if (mAppelProcedureWL != null) {
-
-                        mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Image sent to HUD.\nSize:" + bitmap.getByteCount());
+            if(isConnected())
+            {
+                byte[] returnValue = mZebraHud.showImage(bitmap);
+                if(returnValue != null) {
+                    logMessage("Image sent to HUD.\nSize:" + bitmap.getByteCount());
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "showImage", "Image sent to HUD.\nSize:" + bitmap.getByteCount());
                     }
+                    return returnValue;
                 }
-                return returnValue;
+                else
+                {
+                    logMessage("Error displaying image on HUD.\nSize:" + bitmap.getByteCount());
+                    if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showImage", "Error displaying image on HUD.\nSize:" + bitmap.getByteCount());
+                }
             }
             else
             {
-                logMessage("Error displaying image on HUD.\nSize:" + bitmap.getByteCount());
-                mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "Error displaying image on HUD.\nSize:" + bitmap.getByteCount());
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showImage", "No HD4000 connected.");
             }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: showImage\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showImage", e.getLocalizedMessage());
         }
         return null;
     }
 
-    public void showImage(final String bitmapPath, final String fsCallbackSucces, final String fsCallbackErreur)
+    public void showImageFromPath(final String bitmapPath, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        // Call Glide to Build Bitmap on Background thread from image path
-        Glide.with(getActivity()) // Context
-                .asBitmap() // Set Image Type
-                .load(bitmapPath) // File Path
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                        // This is a Glide Callback when Bitmap has been created
-                        // Call showImage() & pass through the generated bitmap
-                       showImage(resource, fsCallbackSucces, fsCallbackErreur);
-                    }
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                        // Empty Calllback
-                    }
-                });
+        try
+        {
+            // Call Glide to Build Bitmap on Background thread from image path
+            Glide.with(getActivity()) // Context
+                    .asBitmap() // Set Image Type
+                    .load(bitmapPath) // File Path
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                            // This is a Glide Callback when Bitmap has been created
+                            // Call showImage() & pass through the generated bitmap
+                            showImage(resource, fsCallbackSucces, fsCallbackErreur);
+                        }
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            // Empty Calllback
+                        }
+                    });
+        }
+        catch(Exception e)
+        {
+            logMessage("Exception in: showImageFromPath\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showImageFromPath", e.getLocalizedMessage());
+        }
     }
 
     public byte[] showJim(final String fsJim, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            byte[] returnValue = mZebraHud.showJim(fsJim, (String)null, (String)null, (String)null);
-            if(returnValue != null) {
-                logMessage("Jim sent to HUD.\n" + fsJim);
-
-                if (fsCallbackSucces != "") {
-                    if (mAppelProcedureWL != null) {
-
-                        mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Jim sent to HUD.\n" + fsJim);
+            if(isConnected())
+            {
+                byte[] returnValue = mZebraHud.showJim(fsJim, (String)null, (String)null, (String)null);
+                if(returnValue != null) {
+                    logMessage("Jim sent to HUD.\n" + fsJim);
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "showJim", "Jim sent to HUD.\n" + fsJim);
                     }
+                    return returnValue;
                 }
-                return returnValue;
+                else
+                {
+                    logMessage("Error sending Jim to HUD.\n" + fsJim);
+                    if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showJim", "Error sending Jim to HUD.\n" + fsJim);
+                }
             }
             else
             {
-                logMessage("Error sending Jim to HUD.\n" + fsJim);
-                mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "Error sending Jim to HUD.\n" + fsJim);
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showJim", "No HD4000 connected.");
             }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: showJim\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showJim", e.getLocalizedMessage());
         }
         return null;
     }
 
-    public byte[] showJim(final String fsJim, final String fsDirectoryImages, final String fsImageFilename, final String fsJimBase, final String fsCallbackSucces, final String fsCallbackErreur)
+    public byte[] showJimWithImages(final String fsJim, final String fsDirectoryImages, final String fsImageFilename, final String fsJimBase, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            byte[] returnValue = mZebraHud.showJim(fsJim, fsDirectoryImages, fsImageFilename, fsJimBase);
-            if(returnValue != null) {
-                logMessage("Jim sent to HUD.\n" + fsJim);
-
-                if (fsCallbackSucces != "") {
-                    if (mAppelProcedureWL != null) {
-
-                        mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Jim sent to HUD.\n" + fsJim);
+            if(isConnected())
+            {
+                byte[] returnValue = mZebraHud.showJim(fsJim, fsDirectoryImages, fsImageFilename, fsJimBase);
+                if(returnValue != null) {
+                    logMessage("Jim sent to HUD.\n" + fsJim);
+                    if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "showJimWithImages", "Jim sent to HUD.\n" + fsJim);
                     }
+                    return returnValue;
                 }
-                return returnValue;
+                else
+                {
+                    logMessage("Error sending Jim to HUD.\n" + fsJim);
+                    if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                        mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showJimWithImages", "Error sending Jim to HUD.\n" + fsJim);                }
             }
             else
             {
-                logMessage("Error sending Jim to HUD.\n" + fsJim);
-                mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "Error sending Jim to HUD.\n" + fsJim);
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showJimWithImages", "No HD4000 connected.");
             }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: showJimWithImages\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showJimWithImages", e.getLocalizedMessage());
         }
         return null;
     }
 
     public void showCachedImage(final byte[] fsBytes, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            mZebraHud.showCachedImage(fsBytes);
-            logMessage("Image sent to HUD.\nSize:" + fsBytes.length);
-
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Image sent to HUD.\nSize:" + fsBytes.length);
+            if(isConnected())
+            {
+                mZebraHud.showCachedImage(fsBytes);
+                logMessage("Image sent to HUD.\nSize:" + fsBytes.length);
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "showCachedImage", "Image sent to HUD.\nSize:" + fsBytes.length);
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "showCachedImage", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: showCachedImage\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "showCachedImage", e.getLocalizedMessage());
         }
     }
 
     public void setMicrophoneEnabled(final boolean fsEnable, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            mZebraHud.setMicrophoneEnabled(fsEnable);
-            logMessage("Microphone enable set to:" + fsEnable);
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Microphone enable set to:" + fsEnable);
+            if(isConnected())
+            {
+                mZebraHud.setMicrophoneEnabled(fsEnable);
+                logMessage("Microphone enable set to:" + fsEnable);
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "setMicrophoneEnabled", "Microphone enable set to:" + fsEnable);
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "setMicrophoneEnabled", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: setMicrophoneEnabled\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "setMicrophoneEnabled", e.getLocalizedMessage());
         }
     }
 
-    public boolean getMicrophoneEnabled() {
-        if(isConnected())
+    public boolean getMicrophoneEnabled(final String fsCallbackErreur)
+    {
+        try
         {
-            return mZebraHud.getMicrophoneEnabled();
-        }
-        else
-        {
+            if(isConnected())
+            {
+                return mZebraHud.getMicrophoneEnabled();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getMicrophoneEnabled", "No HD4000 connected.");
             return false;
+            }
         }
+        catch(Exception e)
+        {
+            logMessage("Exception in: getMicrophoneEnabled\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getMicrophoneEnabled", e.getLocalizedMessage());
+        }
+        return false;
     }
 
     public void setCameraEnabled(boolean fsEnable, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            mZebraHud.setCameraEnabled(fsEnable);
-            logMessage("Camera enable set to:" + fsEnable);
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Camera enable set to:" + fsEnable);
+            if(isConnected())
+            {
+                mZebraHud.setCameraEnabled(fsEnable);
+                logMessage("Camera enable set to:" + fsEnable);
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "setCameraEnabled", "Camera enable set to:" + fsEnable);
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "setCameraEnabled", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: setCameraEnabled\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "setCameraEnabled", e.getLocalizedMessage());
         }
     }
 
-    public boolean getCameraEnabled() {
-        if(isConnected())
+    public boolean getCameraEnabled(final String fsCallbackErreur) {
+        try
         {
-            return mZebraHud.getCameraEnabled();
+            if(isConnected())
+            {
+                return mZebraHud.getCameraEnabled();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getCameraEnabled", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            return false;
+            logMessage("Exception in: getCameraEnabled\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getCameraEnabled", e.getLocalizedMessage());
         }
+        return false;
     }
 
     public void startCameraCapture(final String fsCallbackSucces, final String fsCallbackErreur) {
-        if(isConnected())
+        try
         {
-            mZebraHud.startCameraCapture();
-            logMessage("Camera capture started");
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Camera capture started");
+            if(isConnected())
+            {
+                mZebraHud.startCameraCapture();
+                logMessage("Camera capture started");
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "startCameraCapture", "Camera capture started");
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "startCameraCapture", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: startCameraCapture\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "startCameraCapture", e.getLocalizedMessage());
         }
     }
 
     public void stopCameraCapture(final String fsCallbackSucces, final String fsCallbackErreur) {
-        if(isConnected())
+        try
         {
-            mZebraHud.stopCameraCapture();
-            logMessage("Camera capture stopped");
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Camera capture stopped");
+            if(isConnected())
+            {
+                mZebraHud.stopCameraCapture();
+                logMessage("Camera capture stopped");
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "stopCameraCapture", "Camera capture stopped");
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "stopCameraCapture", "No HD4000 connected.");
+
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: stopCameraCapture\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "stopCameraCapture", e.getLocalizedMessage());
         }
     }
 
-    public boolean getImuStatus() {
-        if(isConnected())
+    public boolean getImuStatus(final String fsCallbackErreur) {
+        try
         {
-            return mZebraHud.getImuStatus();
+            if(isConnected())
+            {
+                return mZebraHud.getImuStatus();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getImuStatus", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            return false;
+            logMessage("Exception in: getImuStatus\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getImuStatus", e.getLocalizedMessage());
         }
+        return false;
     }
 
     public void startImu(ZebraHud.ImuListener imuListener, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            mZebraHud.startImu(imuListener);
-            logMessage("Starting IMU");
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Starting IMU");
+            if(isConnected())
+            {
+                mZebraHud.startImu(imuListener);
+                logMessage("Starting IMU");
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "startImu", "Starting IMU");
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "startImu", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: startImu\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "startImu", e.getLocalizedMessage());
         }
     }
 
     public void stopImu(final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            mZebraHud.stopImu();
-            logMessage("Stopping IMU");
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Stopping IMU");
+            if(isConnected()) {
+                mZebraHud.stopImu();
+                logMessage("Stopping IMU");
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "stopImu", "Stopping IMU");
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "stopImu", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: stopImu\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "stopImu", e.getLocalizedMessage());
         }
     }
 
-    public ZebraHud.OperationMode getOperationMode(final String fsCallbackSucces, final String fsCallbackErreur)
+    public ZebraHud.OperationMode getOperationMode(final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            logMessage("Getting operation mode");
-            ZebraHud.OperationMode opmode =  mZebraHud.getOperationMode();
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Success getting operation mode.");
-                }
-                return opmode;
+            if(isConnected())
+            {
+                logMessage("Getting operation mode");
+                return mZebraHud.getOperationMode();
+            }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "getOperationMode", "No HD4000 connected.");
             }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
-            return ZebraHud.OperationMode.NORMAL;
+            logMessage("Exception in: getOperationMode\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "getOperationMode", e.getLocalizedMessage());
         }
         return ZebraHud.OperationMode.NORMAL;
     }
 
     public void setOperationMode(ZebraHud.OperationMode mode, final String fsCallbackSucces, final String fsCallbackErreur)
     {
-        if(isConnected())
+        try
         {
-            logMessage("Setting operation mode.");
-            mZebraHud.setOperationMode(mode);
-            if (fsCallbackSucces != "") {
-                if (mAppelProcedureWL != null) {
-
-                    mAppelProcedureWL.appelProcedureWLSS(fsCallbackSucces, "Success setting operation mode.");
+            if(isConnected())
+            {
+                logMessage("Setting operation mode.");
+                mZebraHud.setOperationMode(mode);
+                if (mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackSucces)) {
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackSucces, STATUS_SUCCESS, "setOperationMode", "Setting operation mode to:" + mode.toString());
                 }
             }
+            else
+            {
+                logMessage("No HD4000 connected.");
+                if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                    mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_ERROR, "setOperationMode", "No HD4000 connected.");
+            }
         }
-        else
+        catch(Exception e)
         {
-            logMessage("No HD4000 connected.");
-            mAppelProcedureWL.appelProcedureWLSS(fsCallbackErreur, "No HD4000 connected.");
+            logMessage("Exception in: setOperationMode\nMessage:"+e.getLocalizedMessage());
+            if(mAppelProcedureWL != null && !TextUtils.isEmpty(fsCallbackErreur))
+                mAppelProcedureWL.appelProcedureWLSSSS(fsCallbackErreur, STATUS_EXCEPTION, "setOperationMode", e.getLocalizedMessage());
         }
     }
 
