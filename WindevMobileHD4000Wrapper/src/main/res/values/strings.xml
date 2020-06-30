@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">WindevMobileDataWedgeWrapper</string>
+    <string name="SUCCESS">SUCCES</string>
+    <string name="ERROR">ERREUR</string>
+    <string name="EXCEPTION">EXCEPTION</string>
+    <string name="TRUE">VRAI</string>
+    <string name="FALSE">FAUX</string>
+</resources>
